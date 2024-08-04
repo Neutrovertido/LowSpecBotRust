@@ -2,13 +2,24 @@ use dotenvy::dotenv;
 use std::env;
 
 use serenity::async_trait;
-// use serenity::model::channel::Message;
+use serenity::model::channel::Message;
 use serenity::prelude::*;
 
 struct Handler;
 
+// Message loop
 #[async_trait]
-impl EventHandler for Handler {}
+impl EventHandler for Handler {
+    async fn message(&self, ctx: Context, msg: Message) {
+        // @channel ;)
+        let neraiyo: String = msg.content.to_lowercase();
+        if neraiyo.contains("nullpo") {
+            if let Err(why) = msg.channel_id.say(&ctx.http, "Gah!").await {
+                println!("Error sending message: {why:?}");
+            }
+        }
+    }
+}
 
 #[tokio::main]
 async fn main() {
