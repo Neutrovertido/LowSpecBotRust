@@ -31,7 +31,7 @@ impl EventHandler for Handler {
 
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::Command(command) = interaction {
-            println!("Received command interaction: {command:#?}");
+            println!("👀 Received command interaction: {} by user: {}",command.data.name.as_str(), command.user.name);
 
             let content = match command.data.name.as_str() {
                 "ping" => Some(commands::ping::run(&command.data.options())),
@@ -46,16 +46,6 @@ impl EventHandler for Handler {
                 }
             }
         }
-    }
-
-    async fn ready(&self, ctx: Context, ready: Ready) {
-        println!("{} is connected!", ready.user.name);
-
-        let guild_command =
-            Command::create_global_command(&ctx.http, commands::ping::register())
-                .await;
-
-        println!("I created the following global slash command: {guild_command:#?}");
     }
 }
 
