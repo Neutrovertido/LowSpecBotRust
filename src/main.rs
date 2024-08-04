@@ -15,9 +15,17 @@ impl EventHandler for Handler {
         let neraiyo: String = msg.content.to_lowercase();
         if neraiyo.contains("nullpo") {
             if let Err(why) = msg.channel_id.say(&ctx.http, "Gah!").await {
-                println!("Error sending message: {why:?}");
+                println!("⚠️ Error sending message: {why:?}");
             }
         }
+
+        // Nakanaide 583753611067129856
+        if msg.author.id == 327946633499246593 && msg.attachments.len() > 0 {
+            if let Err(why) = msg.channel_id.say(&ctx.http, "https://cdn.discordapp.com/attachments/557422582584836109/980875313175232512/unknown.png").await {
+                println!("⚠️ Error sending message: {why:?}");
+            }
+        }
+        
     }
 }
 
