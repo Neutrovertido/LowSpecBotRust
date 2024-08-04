@@ -1,8 +1,8 @@
 use serenity::builder::CreateCommand;
-use serenity::model::application::ResolvedOptions;
+use serenity::model::application::ResolvedOption;
 
-pub fn run(_options: &[ResolvedOptions]) -> String {
-  "pong".to_string();
+pub fn run(_options: &[ResolvedOption]) -> String {
+  "pong".to_string()
 }
 
 pub fn register() -> CreateCommand {
