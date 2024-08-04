@@ -1,13 +1,14 @@
+mod commands;
+
 use dotenvy::dotenv;
+use serenity::all::{Message, CreateInteractionResponse, CreateInteractionResponseMessage, GuildId, Interaction, Ready};
 use std::env;
 
 use serenity::async_trait;
-use serenity::model::channel::Message;
 use serenity::prelude::*;
 
 struct Handler;
 
-// Message loop
 #[async_trait]
 impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
@@ -26,6 +27,50 @@ impl EventHandler for Handler {
             }
         }
         
+    }
+
+    async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
+        if let Interaction::Command(command) = interaction {
+            println!("Received command interaction: {command:#?}");
+
+            let content = match command.data.name.as_str() {
+                "ping" => Some(commands::ping::run(&command.data.options())),
+                _ => Some("not implemented :(".to_string()),
+            };
+
+            if let Some(content) = content {
+                let data = CreateInteractionResponseMessage::new().content(content);
+                let builder = CreateInteractionResponse::Message(data);
+                if let Err(why) = command.create_response(&ctx.http, builder).await {
+                    println!("Cannot respond to slash command: {why}");
+                }
+            }
+        }
+    }
+
+    async fn ready(&self, ctx: Context, ready: Ready) {
+        println!("{} is connected!", ready.user.name);
+
+        let guild_id = GuildId::new(
+            env::var("GUILD_ID")
+                .expect("Expected GUILD_ID in environment")
+                .parse()
+                .expect("GUILD_ID must be an integer"),
+        );
+
+        let commands = guild_id
+            .set_commands(&ctx.http, vec![
+                commands::ping::register(),
+            ])
+            .await;
+
+        println!("I now have the following guild slash commands: {commands:#?}");
+
+        // let guild_command =
+        //     Command::create_global_command(&ctx.http, commands::wonderful_command::register())
+        //         .await;
+
+        // println!("I created the following global slash command: {guild_command:#?}");
     }
 }
 
@@ -51,7 +96,10 @@ async fn main() {
     | GatewayIntents::MESSAGE_CONTENT;
 
     let mut client =
-        Client::builder(&token, intents).event_handler(Handler).await.expect("❗Error creating client");
+        Client::builder(&token, intents)
+            .event_handler(Handler)
+            .await
+            .expect("❗Error creating client");
 
     // Start listening for events by starting a single shard
     if let Err(why) = client.start().await {
