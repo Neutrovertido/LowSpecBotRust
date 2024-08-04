@@ -1,7 +1,7 @@
 mod commands;
 
 use dotenvy::dotenv;
-use serenity::all::{Message, CreateInteractionResponse, CreateInteractionResponseMessage, GuildId, Interaction, Ready};
+use serenity::all::{Message, Command, CreateInteractionResponse, CreateInteractionResponseMessage, GuildId, Interaction, Ready};
 use std::env;
 
 use serenity::async_trait;
@@ -51,26 +51,11 @@ impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
 
-        let guild_id = GuildId::new(
-            env::var("GUILD_ID")
-                .expect("Expected GUILD_ID in environment")
-                .parse()
-                .expect("GUILD_ID must be an integer"),
-        );
+        let guild_command =
+            Command::create_global_command(&ctx.http, commands::ping::register())
+                .await;
 
-        let commands = guild_id
-            .set_commands(&ctx.http, vec![
-                commands::ping::register(),
-            ])
-            .await;
-
-        println!("I now have the following guild slash commands: {commands:#?}");
-
-        // let guild_command =
-        //     Command::create_global_command(&ctx.http, commands::wonderful_command::register())
-        //         .await;
-
-        // println!("I created the following global slash command: {guild_command:#?}");
+        println!("I created the following global slash command: {guild_command:#?}");
     }
 }
 
