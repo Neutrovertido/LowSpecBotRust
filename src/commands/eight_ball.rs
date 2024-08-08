@@ -1,13 +1,12 @@
 use std::fs::File;
 use std::io::{self, BufRead};
 
-use rand::Rng;
 use serenity::all::{CreateCommand, ResolvedOption};
 
 pub fn get_phrases() -> io::Result<Vec<String>> {
     let mut phrases = Vec::new();
     
-    let path = "../../phrases.txt";
+    let path = "phrases.txt";
     let file = File::open(path)?;
     let reader = io::BufReader::new(file);
 
@@ -18,11 +17,12 @@ pub fn get_phrases() -> io::Result<Vec<String>> {
 }
 
 pub fn run(_options: &[ResolvedOption]) -> String {
+    get_random_phrase()
+}
+
+pub fn get_random_phrase() -> String{
     let phrases = get_phrases().unwrap();
-    let mut rng = rand::thread_rng();
-
-    let seed: usize = (rng.gen::<f32>() * phrases.len() as f32) as usize;
-
+    let seed: usize = rand::random::<usize>() * phrases.len();
     phrases[seed].clone()
 }
 
