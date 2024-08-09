@@ -22,7 +22,8 @@ pub fn run(_options: &[ResolvedOption]) -> String {
 
 pub fn get_random_phrase() -> String{
     let phrases = get_phrases().unwrap();
-    let seed: usize = rand::random::<usize>() * phrases.len();
+    //println!("{}", phrases[0]);
+    let seed: usize = rand::random::<usize>() % phrases.len();
     phrases[seed].clone()
 }
 
