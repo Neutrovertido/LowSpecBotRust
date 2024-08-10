@@ -8,6 +8,7 @@
 
 -   Rust
 -   Serenity
+-   Poise
 
 ## 🏅 Features (TODO):
 
