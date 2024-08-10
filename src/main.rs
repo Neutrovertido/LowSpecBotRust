@@ -39,6 +39,7 @@ async fn on_error(error: poise::FrameworkError<'_, Data, Error>) {
 
 #[tokio::main]
 async fn main() {
+    println!("🦀 LowSpecBot: Rust Edition");
     println!("🔧 Setting up everything...");
     // FrameworkOptions contains all of poise's configuration option in one struct
     // Every option can be omitted to use its default value
@@ -126,6 +127,7 @@ async fn main() {
         .options(options)
         .build();
 
+    println!("⚙ Configuring environment variables...");
     // This block attempts to use .env first and regular environment variables if it fails
     match dotenv() {
         Ok(_) => {

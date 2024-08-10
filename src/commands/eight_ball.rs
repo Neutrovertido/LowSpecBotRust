@@ -3,8 +3,8 @@ use crate::{Context, Error};
 use std::fs::File;
 use std::io::{self, BufRead};
 
-
-#[poise::command(slash_command)]
+/// Iluminates your soul with some random generated phrases
+#[poise::command(slash_command, rename = "8ball")]
 pub async fn eight_ball(
   ctx: Context<'_>,
 ) -> Result<(), Error> {
