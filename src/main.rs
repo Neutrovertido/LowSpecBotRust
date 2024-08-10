@@ -1,7 +1,7 @@
 mod commands;
 
 use dotenvy::dotenv;
-use serenity::all::{Message, Command, CreateInteractionResponse, CreateInteractionResponseMessage, GuildId, Interaction, Ready};
+use serenity::all::{Message, Command, CreateInteractionResponse, CreateInteractionResponseMessage, Interaction, Ready};
 use std::env;
 
 use serenity::async_trait;
@@ -26,6 +26,15 @@ impl EventHandler for Handler {
                 println!("⚠️ Error sending message: {why:?}");
             }
         }
+
+        // Eight-Ball Command
+        if !msg.author.bot {
+            if rand::random::<f32>() < 0.12f32 {
+                if let Err(why) = msg.channel_id.say(&ctx.http, commands::eight_ball::get_random_phrase()).await {
+                    println!("⚠️ Error sending message: {why:?}");
+                }
+            }
+        }
         
     }
 
@@ -35,6 +44,7 @@ impl EventHandler for Handler {
 
             let content = match command.data.name.as_str() {
                 "ping" => Some(commands::ping::run(&command.data.options())),
+                "8ball" => Some(commands::eight_ball::run(&command.data.options())),
                 _ => Some("not implemented :(".to_string()),
             };
 
@@ -49,13 +59,13 @@ impl EventHandler for Handler {
     }
 
     async fn ready(&self, ctx: Context, ready: Ready) {
+
         println!("{} is connected!", ready.user.name);
 
-        let guild_command =
-            Command::create_global_command(&ctx.http, commands::ping::register())
-                .await;
+        // Register global slash commands
+        let _ = Command::create_global_command(&ctx.http, commands::ping::register()).await;
+        let _ = Command::create_global_command(&ctx.http, commands::eight_ball::register()).await;
 
-        // println!("I created the following global slash command: {guild_command:#?}");
     }
 }
 
