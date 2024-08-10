@@ -1,7 +1,16 @@
+use crate::{Context, Error};
+
 use std::fs::File;
 use std::io::{self, BufRead};
 
-use serenity::all::{CreateCommand, ResolvedOption};
+
+#[poise::command(slash_command)]
+pub async fn eight_ball(
+  ctx: Context<'_>,
+) -> Result<(), Error> {
+  ctx.say(get_random_phrase()).await?;
+  Ok(())
+}
 
 pub fn get_phrases() -> io::Result<Vec<String>> {
     let mut phrases = Vec::new();
@@ -16,17 +25,9 @@ pub fn get_phrases() -> io::Result<Vec<String>> {
     Ok(phrases)
 }
 
-pub fn run(_options: &[ResolvedOption]) -> String {
-    get_random_phrase()
-}
-
 pub fn get_random_phrase() -> String{
     let phrases = get_phrases().unwrap();
     //println!("{}", phrases[0]);
     let seed: usize = rand::random::<usize>() % phrases.len();
     phrases[seed].clone()
-}
-
-pub fn register() -> CreateCommand {
-    CreateCommand::new("8ball").description("Iluminates your soul with some random generated phrases")
 }
