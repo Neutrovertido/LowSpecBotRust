@@ -1,8 +1,11 @@
 
 mod commands;
 
+use commands::eight_ball;
 use dotenvy::dotenv;
 use std::env;
+
+use rand::random;
 
 use poise::serenity_prelude as serenity;
 use std::{
@@ -103,6 +106,15 @@ async fn main() {
                         if new_message.author.id == 327946633499246593 && new_message.attachments.len() > 0 {
                             new_message.channel_id.say(&_ctx.http, "https://cdn.discordapp.com/attachments/557422582584836109/980875313175232512/unknown.png").await?;
                         }
+
+                        // 8ball
+                        let response_seed: u32 = (random::<u32>() % 50) + 1;
+                        if response_seed == 12 {
+                            let content = &eight_ball::get_random_phrase();
+                            new_message.channel_id.say(&_ctx.http, content).await?;
+                            println!("📢 Random response triggered!");
+                        }
+                        
                     },
                     _ => {}
                 }
