@@ -6,8 +6,7 @@ use std::env;
 
 use poise::serenity_prelude as serenity;
 use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
+    sync::Arc,
     time::Duration,
 };
 
@@ -56,7 +55,7 @@ async fn main() {
         // The global error handler for all error cases that may occur
         on_error: |error| Box::pin(on_error(error)),
         // This code is run before every command
-        pre_command: |ctx| {
+        pre_command: |_ctx| {
             Box::pin(async move {
                 //println!("Executing command {}...", ctx.command().qualified_name);
             })
@@ -120,7 +119,6 @@ async fn main() {
                 println!("✅ Bot initialized successfully!\n🔑 Logged in as {}", _ready.user.name);
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 Ok(Data {
-                    //votes: Mutex::new(HashMap::new()),
                 })
             })
         })
