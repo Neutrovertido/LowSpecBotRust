@@ -17,7 +17,7 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 // Custom user data passed to all command functions
 pub struct Data {
-    votes: Mutex<HashMap<String, u32>>,
+    //votes: Mutex<HashMap<String, u32>>,
 }
 
 async fn on_error(error: poise::FrameworkError<'_, Data, Error>) {
@@ -85,7 +85,23 @@ async fn main() {
                     event.snake_case_name()
                 ); */
 
-                
+                // Message loop
+                match event {
+                    serenity::FullEvent::Message { new_message } => {
+                        let content = &new_message.content;
+                        if new_message.author.id != _ctx.cache.current_user().id {
+                            println!("Message received: '{}' sent by {}", content, new_message.author.name);
+                        }
+
+                        // @channel ;)
+                        let neraiyo: String = content.to_lowercase();
+                        if neraiyo.contains("nullpo") {
+                            new_message.channel_id.say(&_ctx.http, "Gah!").await?;
+                        }
+
+                    },
+                    _ => {}
+                }
 
                 Ok(())
             })
@@ -99,7 +115,7 @@ async fn main() {
                 println!("✅ Bot initialized successfully!\n🔑 Logged in as {}", _ready.user.name);
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 Ok(Data {
-                    votes: Mutex::new(HashMap::new()),
+                    //votes: Mutex::new(HashMap::new()),
                 })
             })
         })
