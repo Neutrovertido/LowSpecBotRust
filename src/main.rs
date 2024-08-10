@@ -99,6 +99,10 @@ async fn main() {
                             new_message.channel_id.say(&_ctx.http, "Gah!").await?;
                         }
 
+                        // Nakanaide 583753611067129856
+                        if new_message.author.id == 327946633499246593 && new_message.attachments.len() > 0 {
+                            new_message.channel_id.say(&_ctx.http, "https://cdn.discordapp.com/attachments/557422582584836109/980875313175232512/unknown.png").await?;
+                        }
                     },
                     _ => {}
                 }
