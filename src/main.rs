@@ -6,6 +6,7 @@ use dotenvy::dotenv;
 use std::env;
 
 use rand::random;
+use chrono::Local;
 
 use poise::serenity_prelude as serenity;
 use std::{
@@ -66,7 +67,9 @@ async fn main() {
         // This code is run after a command if it was successful (returned Ok)
         post_command: |ctx| {
             Box::pin(async move {
-                println!("💻 Command {} issued by {}!", ctx.command().qualified_name, ctx.author().name);
+                let mut fmsg = format!("💻 Command {} issued by {}!", ctx.command().qualified_name, ctx.author().name);
+                fmsg = dateify(&fmsg);
+                println!("{}", fmsg);
             })
         },
         // Every command invocation must pass this check to continue execution
@@ -93,17 +96,21 @@ async fn main() {
                     serenity::FullEvent::Message { new_message } => {
                         let content = &new_message.content;
                         if new_message.author.id != _ctx.cache.current_user().id {
-                            println!("Message received: '{}' sent by {}", content, new_message.author.name);
+                            let mut fmsg = format!("Message received: '{}' sent by {}", content, new_message.author.name);
+                            fmsg = dateify(&fmsg);
+                            println!("{}", fmsg);
                         }
 
                         // @channel ;)
                         let neraiyo: String = content.to_lowercase();
                         if neraiyo.contains("nullpo") {
+                            println!("🔊 Triggered neraiyo response");
                             new_message.channel_id.say(&_ctx.http, "Gah!").await?;
                         }
 
                         // Nakanaide 583753611067129856
                         if new_message.author.id == 327946633499246593 && new_message.attachments.len() > 0 {
+                            println!("🔊 Triggered nakanaide response");
                             new_message.channel_id.say(&_ctx.http, "https://cdn.discordapp.com/attachments/557422582584836109/980875313175232512/unknown.png").await?;
                         }
 
@@ -158,4 +165,10 @@ async fn main() {
         .await;
 
     client.unwrap().start().await.unwrap()
+}
+
+fn dateify(log: &str) -> String {
+    let now = Local::now();
+    let format_datetime = now.format("%d/%m/%y:%H:%M").to_string();
+    format!("{} {}", format_datetime, log)
 }
