@@ -50,7 +50,8 @@ async fn main() {
         commands: vec![
             commands::ping::ping(), 
             commands::eight_ball::eight_ball(), 
-            commands::help::help()
+            commands::help::help(),
+            commands::clean::clean()
             ],//commands::help(), commands::vote(), commands::getvotes()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("~".into()),
@@ -162,7 +163,7 @@ async fn main() {
     let token = env::var("TOKEN").expect("❗Discord token environment variable not found! Quitting program...\n");
     
     let intents =
-        serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
+        serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT | serenity::GatewayIntents::GUILD_MESSAGES;
 
     let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
