@@ -19,7 +19,7 @@ pub async fn help(ctx: Context<'_>) -> Result<(), Error> {
         .timestamp(Timestamp::now());
 
     for (name, description) in commands {
-        embed = embed.field(name, description, false);
+        embed = embed.field(name, description, false); // IMPORTANT: Must take ownership again
     }
 
     let reply = CreateReply {
