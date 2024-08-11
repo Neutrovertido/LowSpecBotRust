@@ -9,7 +9,8 @@ pub async fn help(ctx: Context<'_>) -> Result<(), Error> {
     //ctx.say("Pong!").await?;
     let commands = vec![
         ("ping", "A ping command"),
-        ("8ball", "Iluminates your soul with some random generated phrases")
+        ("8ball", "Iluminates your soul with some random generated phrases"),
+        ("clean", "Erases the amount messages specified with a maximum of 100")
     ];
 
     let mut embed = CreateEmbed::default()
