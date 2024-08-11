@@ -7,7 +7,7 @@ pub async fn clean(ctx: Context<'_>, count: u64) -> Result<(), Error> {
     //ctx.say("Pong!").await?;
 
     if count == 0 || count > 100 {
-        ctx.say("Please specify an amout between 1 and 100").await?;
+        ctx.say("Please specify an amount between 1 and 100").await?;
         return Ok(());
     }
 
