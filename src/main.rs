@@ -10,6 +10,7 @@ use chrono::Local;
 
 use poise::serenity_prelude as serenity;
 use std::{
+    sync::atomic::{AtomicBool, Ordering},
     sync::Arc,
     time::Duration,
 };
@@ -21,6 +22,7 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 // Custom user data passed to all command functions
 pub struct Data {
     phrases: Vec<String>,
+    auto_reply_enabled: AtomicBool,
     //votes: Mutex<HashMap<String, u32>>,
 }
 
@@ -54,7 +56,8 @@ async fn main() {
             commands::help::help(),
             commands::clean::clean(),
             commands::avatar::avatar(),
-            commands::amplify::amplify()
+            commands::amplify::amplify(),
+            commands::toggle_replies::toggle_replies()
             ],//commands::help(), commands::vote(), commands::getvotes()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("~".into()),
@@ -109,6 +112,10 @@ async fn main() {
                             println!("{}", fmsg);
                         }
 
+                        if new_message.author.bot {
+                            return Ok(());
+                        }
+
                         // @channel ;)
                         let neraiyo: String = content.to_lowercase();
                         if neraiyo.contains("nullpo") {
@@ -123,8 +130,8 @@ async fn main() {
                         }
 
                         // 8ball
-                        let response_seed: u32 = (random::<u32>() % 50) + 1;
-                        if response_seed == 12 {
+                        let response_seed: u32 = (random::<u32>() % 30) + 1;
+                        if _data.auto_reply_enabled.load(Ordering::Relaxed) && response_seed == 12 {
                             if let Some(content) = eight_ball::get_random_phrase(&_data.phrases) {
                                 new_message.channel_id.say(&_ctx.http, content).await?;
                                 println!("📢 Random response triggered!");
@@ -149,6 +156,7 @@ async fn main() {
                 let phrases = eight_ball::get_phrases()?;
                 Ok(Data {
                     phrases,
+                    auto_reply_enabled: AtomicBool::new(true),
                 })
             })
         })

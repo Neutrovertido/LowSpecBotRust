@@ -12,7 +12,8 @@ pub async fn help(ctx: Context<'_>) -> Result<(), Error> {
         ("8ball", "Iluminates your soul with some random generated phrases"),
         ("clean", "Erases the amount messages specified with a maximum of 100"),
         ("avatar", "Display user avatar"),
-        ("amplify", "Translates normal text messages into regional indicator emojis")
+        ("amplify", "Translates normal text messages into regional indicator emojis"),
+        ("toggle_replies", "Toggles random automatic bot replies")
     ];
 
     let mut embed = CreateEmbed::default()
