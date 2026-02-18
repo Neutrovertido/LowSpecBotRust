@@ -15,7 +15,7 @@ pub async fn help(ctx: Context<'_>) -> Result<(), Error> {
         ("amplify", "Translates normal text messages into regional indicator emojis"),
         ("toggle_replies", "Toggles random automatic bot replies"),
         ("add_phrase", "Add a new phrase to the 8ball"),
-        ("delete_phrase", "Delete a phrase by number (admin only)"),
+        ("delete_phrase", "Delete phrase(s) by number(s) (admin only, supports bulk deletion)"),
         ("list_phrases", "List all 8ball phrases with numbers")
     ];
 
