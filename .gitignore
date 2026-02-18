@@ -26,3 +26,5 @@ Cargo.lock
 # Added by cargo
 
 /target
+config.toml
+phrases.txt

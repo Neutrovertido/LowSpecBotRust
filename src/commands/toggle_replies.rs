@@ -1,4 +1,4 @@
-use crate::{Context, Error};
+use crate::{config, Context, Error};
 use poise::serenity_prelude::Permissions;
 use std::sync::atomic::Ordering;
 
@@ -28,6 +28,12 @@ pub async fn toggle_replies(ctx: Context<'_>) -> Result<(), Error> {
 
     let was_enabled = ctx.data().auto_reply_enabled.fetch_xor(true, Ordering::Relaxed);
     let enabled = !was_enabled;
+
+    if let Err(e) = config::save_config(&config::Config {
+        auto_reply_enabled: enabled,
+    }) {
+        println!("⚠️ Failed to save config: {}", e);
+    }
 
     if enabled {
         ctx.say("✅ Random replies are now enabled.").await?;

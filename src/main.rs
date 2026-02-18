@@ -1,5 +1,6 @@
 
 mod commands;
+mod config;
 
 use commands::eight_ball;
 use dotenvy::dotenv;
@@ -154,9 +155,13 @@ async fn main() {
                 println!("✅ Bot initialized successfully!\n🔑 Logged in as {}", _ready.user.name);
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                 let phrases = eight_ball::get_phrases()?;
+                let auto_reply_enabled = config::load_config()
+                    .map(|c| c.auto_reply_enabled)
+                    .unwrap_or(true);
+                println!("⚙️ Auto-reply setting loaded: {}", if auto_reply_enabled { "enabled" } else { "disabled" });
                 Ok(Data {
                     phrases,
-                    auto_reply_enabled: AtomicBool::new(true),
+                    auto_reply_enabled: AtomicBool::new(auto_reply_enabled),
                 })
             })
         })
