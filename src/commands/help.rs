@@ -10,7 +10,8 @@ pub async fn help(ctx: Context<'_>) -> Result<(), Error> {
     let commands = vec![
         ("ping", "A ping command"),
         ("8ball", "Iluminates your soul with some random generated phrases"),
-        ("clean", "Erases the amount messages specified with a maximum of 100")
+        ("clean", "Erases the amount messages specified with a maximum of 100"),
+        ("avatar", "Display user avatar")
     ];
 
     let mut embed = CreateEmbed::default()

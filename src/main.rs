@@ -52,7 +52,8 @@ async fn main() {
             commands::ping::ping(), 
             commands::eight_ball::eight_ball(), 
             commands::help::help(),
-            commands::clean::clean()
+            commands::clean::clean(),
+            commands::avatar::avatar()
             ],//commands::help(), commands::vote(), commands::getvotes()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("~".into()),
