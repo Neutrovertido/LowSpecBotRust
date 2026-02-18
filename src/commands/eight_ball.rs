@@ -8,7 +8,8 @@ use std::io::{self, BufRead};
 pub async fn eight_ball(
   ctx: Context<'_>,
 ) -> Result<(), Error> {
-  ctx.say(get_random_phrase()).await?;
+  let content = get_random_phrase(&ctx.data().phrases).unwrap_or("No 8ball phrases available right now.");
+  ctx.say(content).await?;
   Ok(())
 }
 
@@ -20,14 +21,16 @@ pub fn get_phrases() -> io::Result<Vec<String>> {
     let reader = io::BufReader::new(file);
 
     for line in reader.lines() {
-        phrases.push(line.unwrap().to_string());
+      phrases.push(line?);
     }
     Ok(phrases)
 }
 
-pub fn get_random_phrase() -> String{
-    let phrases = get_phrases().unwrap();
-    //println!("{}", phrases[0]);
+  pub fn get_random_phrase(phrases: &[String]) -> Option<&str> {
+    if phrases.is_empty() {
+      return None;
+    }
+
     let seed: usize = rand::random::<usize>() % phrases.len();
-    phrases[seed].clone()
+    Some(phrases[seed].as_str())
 }

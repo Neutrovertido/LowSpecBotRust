@@ -20,6 +20,7 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 // Custom user data passed to all command functions
 pub struct Data {
+    phrases: Vec<String>,
     //votes: Mutex<HashMap<String, u32>>,
 }
 
@@ -122,9 +123,10 @@ async fn main() {
                         // 8ball
                         let response_seed: u32 = (random::<u32>() % 50) + 1;
                         if response_seed == 12 {
-                            let content = &eight_ball::get_random_phrase();
-                            new_message.channel_id.say(&_ctx.http, content).await?;
-                            println!("📢 Random response triggered!");
+                            if let Some(content) = eight_ball::get_random_phrase(&_data.phrases) {
+                                new_message.channel_id.say(&_ctx.http, content).await?;
+                                println!("📢 Random response triggered!");
+                            }
                         }
                         
                     },
@@ -142,7 +144,9 @@ async fn main() {
             Box::pin(async move {
                 println!("✅ Bot initialized successfully!\n🔑 Logged in as {}", _ready.user.name);
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
+                let phrases = eight_ball::get_phrases()?;
                 Ok(Data {
+                    phrases,
                 })
             })
         })
@@ -169,7 +173,17 @@ async fn main() {
         .framework(framework)
         .await;
 
-    client.unwrap().start().await.unwrap()
+    let mut client = match client {
+        Ok(client) => client,
+        Err(error) => {
+            println!("❗ Failed to create client: {}", error);
+            return;
+        }
+    };
+
+    if let Err(error) = client.start().await {
+        println!("❗ Client exited with error: {}", error);
+    }
 }
 
 fn dateify(log: &str) -> String {
