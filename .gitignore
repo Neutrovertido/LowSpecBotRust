@@ -28,3 +28,4 @@ Cargo.lock
 /target
 config.toml
 phrases.txt
+phrases.toml

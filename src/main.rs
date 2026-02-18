@@ -1,6 +1,7 @@
 
 mod commands;
 mod config;
+mod phrases;
 
 use commands::eight_ball;
 use dotenvy::dotenv;
@@ -15,6 +16,7 @@ use std::{
     sync::Arc,
     time::Duration,
 };
+use tokio::sync::RwLock;
 
 // Types used by all command functions
 type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -22,7 +24,7 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 // Custom user data passed to all command functions
 pub struct Data {
-    phrases: Vec<String>,
+    phrases: Arc<RwLock<Vec<String>>>,
     auto_reply_enabled: AtomicBool,
     //votes: Mutex<HashMap<String, u32>>,
 }
@@ -58,7 +60,10 @@ async fn main() {
             commands::clean::clean(),
             commands::avatar::avatar(),
             commands::amplify::amplify(),
-            commands::toggle_replies::toggle_replies()
+            commands::toggle_replies::toggle_replies(),
+            commands::add_phrase::add_phrase(),
+            commands::delete_phrase::delete_phrase(),
+            commands::list_phrases::list_phrases()
             ],//commands::help(), commands::vote(), commands::getvotes()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("~".into()),
@@ -133,8 +138,12 @@ async fn main() {
                         // 8ball
                         let response_seed: u32 = (random::<u32>() % 30) + 1;
                         if _data.auto_reply_enabled.load(Ordering::Relaxed) && response_seed == 12 {
-                            if let Some(content) = eight_ball::get_random_phrase(&_data.phrases) {
-                                new_message.channel_id.say(&_ctx.http, content).await?;
+                            let content = {
+                                let phrases = _data.phrases.read().await;
+                                eight_ball::get_random_phrase(&phrases).map(|s| s.to_string())
+                            };
+                            if let Some(content) = content {
+                                new_message.channel_id.say(&_ctx.http, &content).await?;
                                 println!("📢 Random response triggered!");
                             }
                         }
@@ -154,13 +163,13 @@ async fn main() {
             Box::pin(async move {
                 println!("✅ Bot initialized successfully!\n🔑 Logged in as {}", _ready.user.name);
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
-                let phrases = eight_ball::get_phrases()?;
+                let phrases = phrases::load_phrases()?;
                 let auto_reply_enabled = config::load_config()
                     .map(|c| c.auto_reply_enabled)
                     .unwrap_or(true);
                 println!("⚙️ Auto-reply setting loaded: {}", if auto_reply_enabled { "enabled" } else { "disabled" });
                 Ok(Data {
-                    phrases,
+                    phrases: Arc::new(RwLock::new(phrases)),
                     auto_reply_enabled: AtomicBool::new(auto_reply_enabled),
                 })
             })
