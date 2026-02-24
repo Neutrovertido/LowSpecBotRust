@@ -2,7 +2,7 @@ use crate::{phrases, Context, Error};
 use poise::serenity_prelude::Permissions;
 use std::collections::HashSet;
 
-/// Delete phrase(s) by their numbers (use /list_phrases to see numbers), use spaces or commas for bulk deletion
+/// Delete phrase(s) by their numbers (use /list_phrases to see numbers), use spaces or commas for bulk
 #[poise::command(slash_command)]
 pub async fn delete_phrase(ctx: Context<'_>, numbers: String) -> Result<(), Error> {
     let author = match ctx.author_member().await {
