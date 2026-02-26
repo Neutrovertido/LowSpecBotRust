@@ -10,7 +10,13 @@ pub struct PhrasesFile {
 }
 
 pub fn load_phrases() -> io::Result<Vec<String>> {
-    let contents = fs::read_to_string(PHRASES_PATH)?;
+    let contents = match fs::read_to_string(PHRASES_PATH) {
+        Ok(contents) => contents,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => {
+            return Ok(Vec::new());
+        }
+        Err(error) => return Err(error),
+    };
     let phrases_data: PhrasesFile = toml::from_str(&contents)
         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
     Ok(phrases_data.phrases)
